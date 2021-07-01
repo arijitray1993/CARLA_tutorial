@@ -49,7 +49,7 @@ Sometimes, the above command can give a segmentation fault with signal 11 and me
 Run the CARLA container in interactve mode and check the GPU:
 
 ```
-docker run -p 2000-2002:2000-2002 --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 -it carlasim/carla:0.9.9 /bin/bash​
+docker run -p 2000-2002:2000-2002 --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 --name carla_container -it carlasim/carla:0.9.9 /bin/bash
 nvidia-smi
 ```
 
@@ -71,10 +71,17 @@ If it seems to be working, proceed to the Python API tutorial section below.
 
 # Python API Tutorial
 
+If you want, you can clone this repository: `git clone <https://github.com/arijitray1993/CARLA_tutorial.git>` and follow along in `playground.ipynb`. 
+
+## Copy PythonAPI folder from the docker container
+
+We need to copy the PythonAPI/ folder from inside the docker container in order to use it with Python. Python will communicate with the CARLA simulation running inside the docker container using the TCP ports 2000-2002. 
+
+`docker cp carla_container:/home/carla/PythonAPI ./`
+
+This should replace the `PythonAPI` folder that you cloned from this repository. This is very important - make sure to copy the Python API from the container you are running and not from any other version. 
+
 ## Importing CARLA and miscellaneous packages
-
-Follow along in `playground.ipynb` in the repository: https://github.com/arijitray1993/CARLA_tutorial/blob/main/playground.ipynb 
-
 
 ```python
 import glob
@@ -536,7 +543,7 @@ plt.show()
 
 This is an experimental function I wrote to get the location of a non-supported object in the segmentation image. 
 
-We can get the global coordinate of the object and the camera, along with the rotation of the camera. We can compute the location of the object in the image using this information. 
+We can get the global coordinate of the object and the camera, along with the rotation of the camera. We can compute the location of the object in the image using this information in the function we defined above called `get_camera_bbox_from_global()`  [here](https://arijitray1993.github.io/CARLA_tutorial/#some-helper-functions-we-will-need-later-feel-free-to-skip-this-for-now-to-the-next-section).
 
 It is yet to be seen if this actually works, I will confirm and fix this soon. If coordinates returned are negative or greater than (600,800), it should mean the object is outside the camera's frame of view. 
 
