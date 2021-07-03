@@ -1,3 +1,5 @@
+(updated July 2021)
+This is a simple tutorial of how to run CARLA headless on a remote Ubuntu GPU server. We will autopilot drive a car around for getting image frames and sensor data. 
 # Installation on Ubuntu
 
 There are various ways to install CARLA:
