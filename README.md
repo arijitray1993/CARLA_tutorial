@@ -73,7 +73,7 @@ If it seems to be working, proceed to the Python API tutorial section below.
 
 # Python API Tutorial
 
-If you want, you can clone this repository: `git clone <https://github.com/arijitray1993/CARLA_tutorial.git>` and follow along in `playground.ipynb`. 
+If you want, you can clone this repository: `git clone https://github.com/arijitray1993/CARLA_tutorial.git` and follow along in `playground.ipynb`. 
 
 ## Copy PythonAPI folder from the docker container
 
