@@ -428,12 +428,6 @@ world.tick()
 ```
 
 
-
-
-    929
-
-
-
 ### Getting camera data 
 
 Let's get the data from the queues we defined to push data into while setting up the cameras.
@@ -458,12 +452,6 @@ image.save_to_disk("test_images/%06d.png" %(image.frame))
 image_seg.save_to_disk("test_images/%06d_semseg.png" %(image.frame), carla.ColorConverter.CityScapesPalette)
 image_depth.save_to_disk("test_images/%06d_depth.png" %(image.frame), carla.ColorConverter.LogarithmicDepth)
 ```
-
-
-
-
-    'test_images/000929_depth.png'
-
 
 
 ### Let's visualize these images
@@ -547,7 +535,7 @@ plt.show()
     
 
 
-### Experimental: Getting Bounding Boxes for non-supported objects in CARLA 
+<!-- ### Experimental: Getting Bounding Boxes for non-supported objects in CARLA 
 
 This is an experimental function I wrote to get the location of a non-supported object in the segmentation image. 
 
@@ -587,7 +575,7 @@ plt.imshow(img)
     
 ![png](output_43_1.png)
     
-
+-->
 
 ## Driving the vehicle
 
