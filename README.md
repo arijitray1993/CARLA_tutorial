@@ -373,48 +373,7 @@ def get_bbox_from_mask(mask):
     props = measure.regionprops(label_mask)
     
     return [prop.bbox for prop in props]
-
-    
-    
-def get_camera_bbox_from_global(carlaLocObj, carlaTransformCamera):
-    # takes in carla locations of object and camera and returns the bbox in camera frame. 
-    # returns -1,-1,-1,-1 if outside box
-    obj_x, obj_y, obj_z = carlaLocObj.x, carlaLocObj.y, carlaLocObj.z 
-    
-    cam_x, cam_y, cam_z = carlaTransformCamera.location.x, carlaTransformCamera.location.y, carlaTransformCamera.location.z
-    
-    pitch, yaw, roll = carlaTransformCamera.rotation.pitch, carlaTransformCamera.rotation.yaw, carlaTransformCamera.rotation.roll
-    
-    #adjust for pitch, yaw, roll. 
-    y_corr = obj_y*math.cos(pitch)
-    z_corr = obj_z*math.cos(yaw)
-    x_corr = obj_z*math.cos(roll)
-    
-    
-    #calculating the center y coord in image frame
-    d_cm = distance.euclidean([cam_x, cam_y], [obj_x, obj_y])
-    
-    d_me = d_cm/math.tan(45)
-    
-    d_co = distance.euclidean([cam_x, cam_y, cam_z], [obj_x, obj_y, obj_z])
-    
-    d_om = np.sqrt(d_co**2 - d_cm**2)
-    
-    d_oe = d_me - d_om
-    
-    img_y = 800 - d_oe
-    
-    
-    #calculating the center x coord in image frame
-    d_cm = np.sqrt((obj_y - cam_y)**2)
-    
-    d_me = d_cm/(math.tan(45))
-    
-    d_om = np.sqrt(d_co**2 - d_om**2)
-    
-    img_x = d_me - d_om
-    
-    return img_x, img_y    
+   
 ```
 
 ## Running the simulation to get data
@@ -533,7 +492,24 @@ plt.show()
     
 ![png](output_39_0.png)
     
+## ToDo: Get Bounding boxes for unsupported objects (eg, fountains)
 
+Currently, we can get the global coordinates of the object using `get_location()` or `get_transform()`. 
+
+```python
+weirdobj_loc = weird_obj.get_location()
+# returns x, y, z as weirdobj_loc.x, weirdobj_loc.y, weirdobj_loc.z
+
+weirdobj_transform = weird_obj.get_transform()
+# returns x, y, z as weirdobj_transform.location.x, weirdobj_transform.location.y, weirdobj_transform.location.z
+# also returns pitch, yaw, roll as weirdobj_transform.rotation.pitch, weirdobj_transform.rotation.yaw, weirdobj_transform.rotation.roll
+
+#similarly we can get the camera transform
+camera_transform = camera.get_transform()
+```
+
+From the CARLA documentation, we also know that the camera has a field of view angle of 90 degrees as default. 
+We need to somehow map the global coordinates to camera field of view 2-D coordinates. I will update this soon, or if you do it sooner, feel free to fork it or submit a pull request.
 
 <!-- ### Experimental: Getting Bounding Boxes for non-supported objects in CARLA 
 
@@ -545,6 +521,46 @@ It is yet to be seen if this actually works, I will confirm and fix this soon. I
 
 
 ```python
+def get_camera_bbox_from_global(carlaLocObj, carlaTransformCamera):
+    # takes in carla locations of object and camera and returns the bbox in camera frame. 
+    # returns -1,-1,-1,-1 if outside box
+    obj_x, obj_y, obj_z = carlaLocObj.x, carlaLocObj.y, carlaLocObj.z 
+    
+    cam_x, cam_y, cam_z = carlaTransformCamera.location.x, carlaTransformCamera.location.y, carlaTransformCamera.location.z
+    
+    pitch, yaw, roll = carlaTransformCamera.rotation.pitch, carlaTransformCamera.rotation.yaw, carlaTransformCamera.rotation.roll
+    
+    #adjust for pitch, yaw, roll. 
+    y_corr = obj_y*math.cos(pitch)
+    z_corr = obj_z*math.cos(yaw)
+    x_corr = obj_z*math.cos(roll)
+    
+    
+    #calculating the center y coord in image frame
+    d_cm = distance.euclidean([cam_x, cam_y], [obj_x, obj_y])
+    
+    d_me = d_cm/math.tan(45)
+    
+    d_co = distance.euclidean([cam_x, cam_y, cam_z], [obj_x, obj_y, obj_z])
+    
+    d_om = np.sqrt(d_co**2 - d_cm**2)
+    
+    d_oe = d_me - d_om
+    
+    img_y = 800 - d_oe
+    
+    
+    #calculating the center x coord in image frame
+    d_cm = np.sqrt((obj_y - cam_y)**2)
+    
+    d_me = d_cm/(math.tan(45))
+    
+    d_om = np.sqrt(d_co**2 - d_om**2)
+    
+    img_x = d_me - d_om
+    
+    return img_x, img_y 
+
 # getting weird object locations
 weirdobj_loc = weird_obj.get_location()
 
@@ -592,7 +608,7 @@ Now, we can repeat the steps above to get the sensor data again.
 We can also control the vehicle's accelaration and steering using python. This is especially useful if you would like an AI agent to control the vehicle. I will update how to do so soon. 
 
 
-## Now, let's put this in a `for` loop and collect some data in MS COCO format
+## Optional: Now, let's put this in a `for` loop and collect some data in MS COCO format
 
 `dataset_dicts` will contain the data in MS-COCO format. You can save that as a json file. However, the file can become very large. So, you can also save a separate file for each image. 
 
@@ -729,7 +745,5 @@ camera_seg.destroy()
 client.apply_batch([carla.command.DestroyActor(x) for x in actor_list])
 ```
 
+ 
 
-```python
-
-```
