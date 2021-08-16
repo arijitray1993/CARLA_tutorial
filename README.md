@@ -599,13 +599,13 @@ In order to auto-pilot the vehicle to just drive around and get data, we can cho
 
 
 ```python
-waypoint = random.choice(waypoint.next(1.5))
+waypoint = random.choice(waypoint.next(1.5)) #navigate to next waypoint on map 1.5 meters ahead
 vehicle.set_transform(waypoint.transform)
 ```
 
 Now, we can repeat the steps above to get the sensor data again. 
 
-We can also control the vehicle's accelaration and steering using python. This is especially useful if you would like an AI agent to control the vehicle. I will update how to do so soon. 
+We can also control the vehicle's acceleration and steering using python. This is especially useful if you would like an AI agent to control the vehicle. I will update how to do so soon. 
 
 
 ## Optional: Now, let's put this in a `for` loop and collect some data in MS COCO format
